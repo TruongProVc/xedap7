@@ -5,6 +5,7 @@ const AddProductForm = () => {
   // Trạng thái của các trường trong form
   const [productName, setProductName] = useState('');
   const [productImage, setProductImage] = useState(null);
+  const [productMultiImage, setMultiProductImage] = useState([])
   const [productSummary, setProductSummary] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [productPrice, setProductPrice] = useState('');
@@ -29,6 +30,10 @@ const AddProductForm = () => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setProductImage(file); // Cập nhật hình ảnh
+  }; 
+  const handleMultiImageChange = (event) => {
+    const files = Array.from(event.target.files);
+    setMultiProductImage(files);
   };
 
   const handleSpecificationChange = (index, event) => {
@@ -60,6 +65,8 @@ const AddProductForm = () => {
     formData.append('IdBrand', productBrand);
     formData.append('Avatar', productImage); // Thêm ảnh vào formData
     formData.append('specifications', JSON.stringify(specifications));
+    productMultiImage.forEach(image => formData.append('Images', image));
+    
    
     console.log()
     try {
@@ -100,7 +107,7 @@ const AddProductForm = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="productImage" className="form-label fw-600">Hình ảnh</label>
+                  <label htmlFor="productImage" className="form-label fw-600">Hình ảnh đại diện</label>
                   <input
                     type="file"
                     className="form-control"
@@ -121,6 +128,34 @@ const AddProductForm = () => {
                     </div>
                   )}
                 </div>
+                <div className="mb-3">
+                  <label htmlFor="productMultiImage" className="form-label fw-600">Hình ảnh</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    name="Avatar"
+                    id="productMultiImage"
+                    accept="image/*"
+                    multiple 
+                    onChange={handleMultiImageChange}
+                  />
+                   {productMultiImage &&
+                      productMultiImage.map((image, index) => (
+                        <div key={index} className="preview-image-container" style={{ position: 'relative' }}>
+                           <img
+                              src={URL.createObjectURL(image)} 
+                              alt={`Xem trước hình ảnh ${index + 1}`}
+                              className="img-fluid"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                display: 'block',
+                              }}
+                            />
+                          </div>
+                      ))}
+                      </div>
                 <div className="mb-3">
                   <label htmlFor="productSummary" className="form-label fw-600">Mô tả tóm tắt</label>
                   <textarea

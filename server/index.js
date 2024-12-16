@@ -28,9 +28,9 @@ app.get('/accountmanagement',getAllAccounts)
 
 app.get('/brands', getAllBrands);
 app.post('/brands', addBrand);
-app.delete('/brands/:id', deleteBrand); // Route xóa thương hiệu
-app.put('/editbrand/:id', editBrand); // Route xóa thương hiệu
-// app.post('/', addProduct);
+app.delete('/brands/:id', deleteBrand); 
+app.put('/editbrand/:id', editBrand); 
+
 
 
 app.listen(PORT, () => {

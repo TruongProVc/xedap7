@@ -158,7 +158,7 @@ const HomePage = () => {
                     <div className="product-default-single-item product-color--pink">
                       <div className="image-box">
                         <a href="product-details-default.html" className="image-link">
-                          <img src={product.image} alt={product.name} />
+                          <img src={`..`} alt={product.name} />
                         </a>
                         {product.tag && (
                           <div className="tag">

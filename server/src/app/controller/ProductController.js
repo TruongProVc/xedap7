@@ -4,13 +4,22 @@ const Specification = require('../models/Specification');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const Image = require('../models/Image')
 
+exports.getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.findAll({ include: Brand });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 // Tạo thư mục upload nếu chưa tồn tại
 const uploadDir = path.join(__dirname, '..', 'uploads');
+
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
-
 // multer luu anh
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -22,27 +31,20 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-exports.getAllProducts = async (req, res) => {
-    try {
-        const products = await Product.findAll({ include: Brand });
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Thêm sản phẩm và thông số kỹ thuật
 exports.addProduct = async (req, res) => {
-    upload.single('Avatar')(req, res, async (err) => {
+    upload.fields([
+        { name: 'Avatar', maxCount: 1 }, 
+        { name: 'Images', maxCount: 10 } 
+    ])(req, res, async (err) => {
         if (err) {
             console.error('Lỗi upload:', err);
             return res.status(500).json({ error: 'Lỗi khi upload hình ảnh' });
         }
+
         try {
             const { ProductName, Description, SummaryDescription, Discount, IdBrand, Price, specifications } = req.body;
 
-            let imagePath = req.file ? req.file.path : null;
+            let avatarPath = req.files['Avatar'] ? req.files['Avatar'][0].filename : null;
 
             const newProduct = await Product.create({
                 ProductName,
@@ -51,38 +53,54 @@ exports.addProduct = async (req, res) => {
                 Discount,
                 IdBrand,
                 Price,
-                Avatar: imagePath
+                Avatar: avatarPath
             });
 
-             //chuyen Specifications thanh mang doi tuong
-             let parsedSpecifications = [];
-             if (specifications) {
-                 try {
-                     parsedSpecifications = JSON.parse(specifications);
-                 } catch (parseError) {
-                     console.error('Lỗi khi parse thông số kỹ thuật:', parseError);
-                     return res.status(400).json({ error: 'Thông số kỹ thuật không hợp lệ' });
-                 }
-             }
+            // console.log('Avatar path:', avatarPath);
 
-            //thông số kỹ thuật
-            if (parsedSpecifications) {
-                parsedSpecifications.map((spec, index) => {
-                    const newSpec =  Specification.create({
-                        SpecificationName: spec.SpecificationName,
-                            SpecificationContent: spec.SpecificationContent,
-                        ProductId: newProduct.ProductId,
-                    });
-                })
+            // Lấy danh sách các hình ảnh (Images) từ request
+            const images = req.files['Images'] || [];
+            console.log(images)
+            if (images.length > 0) {
+                // Lưu các hình ảnh vào bảng Image
+                const imagePromises = images.map((image) =>
+                    Image.create({
+                        ImageUrl: image.filename, 
+                        ProductId: newProduct.ProductId 
+                    })
+                );
+                await Promise.all(imagePromises); 
             }
-            res.status(201).json({ message: 'Thêm sản phẩm thành công', spec: specifications });
+
+            let parsedSpecifications = [];
+            if (specifications) {
+                try {
+                    parsedSpecifications = JSON.parse(specifications);
+                } catch (parseError) {
+                    console.error('Lỗi khi parse thông số kỹ thuật:', parseError);
+                    return res.status(400).json({ error: 'Thông số kỹ thuật không hợp lệ' });
+                }
+            }
+
+            // Lưu thông số kỹ thuật vào bảng Specification
+            if (parsedSpecifications.length > 0) {
+                const specPromises = parsedSpecifications.map((spec) =>
+                    Specification.create({
+                        SpecificationName: spec.SpecificationName,
+                        SpecificationContent: spec.SpecificationContent,
+                        ProductId: newProduct.ProductId
+                    })
+                );
+                await Promise.all(specPromises); 
+            }
+
+            res.status(201).json({ message: 'Thêm sản phẩm thành công', productId: newProduct.ProductId });
         } catch (error) {
             console.error('Lỗi khi thêm sản phẩm:', error);
             res.status(500).json({ error: error.message });
         }
     });
 };
-
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -93,8 +111,11 @@ exports.deleteProduct = async (req, res) => {
         if (product.Avatar && fs.existsSync(product.Avatar)) {
             fs.unlinkSync(product.Avatar);
         }
-
-
+        await Image.destroy({
+            where: {
+                ProductId: id 
+            }
+        });
         await Specification.destroy({
             where: {
                 ProductId: id 

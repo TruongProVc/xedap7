@@ -61,14 +61,14 @@ const Login =()=>{
                   <input type="checkbox" id="offer" />
                   <span>Remember me</span>
                 </label>
-                <a href="#">Lost your password?</a>
+                {/* <a href="#">Lost your password?</a> */}
               </div>
             </form>
           </div>
         </div>
         {/*login area start*/}
         {/*register area start*/}
-        <div className="col-lg-6 col-md-6">
+        {/* <div className="col-lg-6 col-md-6">
           <div
             className="account_form register"
             data-aos="fade-up"
@@ -98,11 +98,11 @@ const Login =()=>{
               </div>
             </form>
           </div>
-        </div>
+        </div> */}
         {/*register area end*/}
       </div>
     </div>
-  </div>{" "}
+  </div>
   {/* ...:::: End Customer Login Section :::... */}
 </>
 
