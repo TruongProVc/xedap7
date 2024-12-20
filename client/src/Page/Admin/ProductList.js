@@ -3,26 +3,45 @@ import { Link } from "react-router-dom";
 
 const ItemProduct = () => {
   const [products, setProducts] = useState([]);
+  const [message, setMessage] = useState(""); // Thông báo thành công hoặc lỗi
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/products"); // Đảm bảo URL API chính xác
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+        }
+        const response = await fetch("http://localhost:3000/privatesite/products", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+          credentials: "include", 
+        });
+        if (!response.ok) {
+          throw new Error(`Lỗi: ${response.statusText}`);
+        }
         const data = await response.json();
-        setProducts(data); // Cập nhật danh sách sản phẩm vào state
+        setProducts(data); 
+
+
       } catch (error) {
         console.error("Error", error);
+        setMessage("Đã xảy ra lỗi khi tải danh sách thương hiệu.");
       }
     };
-
     fetchProducts();
   }, []); 
+
   const handleDelete = async (ProductId) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/products/${ProductId}`, {
+      const response = await fetch(`http://localhost:3000/privatesite/products/${ProductId}`, {
         method: "DELETE",
       });
 
@@ -39,6 +58,7 @@ const ItemProduct = () => {
   };
   return (
     <div className="container-fluid">
+      {message && <div className="alert alert-info">{message}</div>}
       <div className="row">
         <div className="col-lg-12 d-flex align-items-stretch">
           <div className="card w-100">

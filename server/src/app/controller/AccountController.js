@@ -9,3 +9,13 @@ exports.getAllAccounts = async (req, res) => {
     }
 };
 
+exports.getProfileAdmin = async(req,res) => {
+    try{
+        const user = req.user;
+        res.json(user); 
+    }
+    catch(err){
+        res.status(500).json({error:err.message});
+    }
+}
+

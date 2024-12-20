@@ -1,6 +1,80 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
+const ProfileAdmin = ({ onPasswordChange }) => {
+    const [accountInformation, setAccountInformation] = useState(null);
+    const [usrName, setUsrName] = useState('');
+
+    const [groupName, setGroupName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Bạn chưa đăng nhập!');
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/privatesite/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Không thể lấy thông tin người dùng');
+                }
+                const data = await response.json();
+                // console.log(data);
+                // setAccountInformation(data);
+                setUsrName(data.username)
+                // setGroupName(data.groupName); 
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    const handlePasswordChange = async () => {
+        if (newPassword !== confirmNewPassword) {
+            alert('Mật khẩu mới không khớp!');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Bạn chưa đăng nhập!');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+            }),
+        });
+
+        if (response.ok) {
+            alert('Mật khẩu đã được thay đổi');
+        } else {
+            alert('Có lỗi xảy ra khi thay đổi mật khẩu');
+        }
+    };
+    // if (!accountInformation) {
+    //     return <div>Đang tải thông tin người dùng...</div>;
+    // }
+
     return (
         <div className="content-wrapper">
             <section className="content-header">
@@ -34,12 +108,12 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                         />
                                     </div>
                                     <h3 className="profile-username text-center">
-                                        {accountInformation?.LastName} {accountInformation?.FirstName}
+                                        {/* {accountInformation?.LastName} {accountInformation?.FirstName} */}
                                     </h3>
                                     <ul className="list-group list-group-unbordered mb-3">
                                         <li className="list-group-item">
                                             <b>Nhóm tài khoản:</b>
-                                            <a className="float-right text-decoration-none c-black">{groupName}</a>
+                                            {/* <a className="float-right text-decoration-none c-black">{groupName}</a> */}
                                         </li>
                                     </ul>
                                 </div>
@@ -95,12 +169,12 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        value={accountInformation?.Username}
-                                                        disabled
+                                                        value={usrName}
                                                     />
+                                                    <p>{usrName}</p>
                                                 </div>
                                             </div>
-                                            <div className="form-group row mb-3">
+                                            {/* <div className="form-group row mb-3">
                                                 <label className="col-sm-2 col-form-label">Email</label>
                                                 <div className="col-sm-10">
                                                     <input
@@ -128,15 +202,16 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        value={accountInformation?.Phone}
+                                                        value={phone}
+                                                        onChange={(e) => setPhone(e.target.value)}
                                                     />
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             {/* Additional fields */}
                                             <button type="submit" className="btn btn-success">Lưu</button>
                                         </div>
 
-                                        <div
+                                        {/* <div
                                             className="tab-pane fade"
                                             id="profile"
                                             role="tabpanel"
@@ -149,6 +224,8 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                                         <input
                                                             type="password"
                                                             className="form-control"
+                                                            value={currentPassword}
+                                                            onChange={(e) => setCurrentPassword(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
@@ -158,6 +235,8 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                                         <input
                                                             type="password"
                                                             className="form-control"
+                                                            value={newPassword}
+                                                            onChange={(e) => setNewPassword(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
@@ -167,19 +246,20 @@ const ProfileAdmin = ({ accountInformation, groupName, onPasswordChange }) => {
                                                         <input
                                                             type="password"
                                                             className="form-control"
+                                                            value={confirmNewPassword}
+                                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
-                                                {/* Add additional password fields */}
                                                 <button
                                                     type="button"
-                                                    onClick={onPasswordChange}
-                                                    className="btn btn-success"
+                                                    onClick={handlePasswordChange}
+                                                    className="btn btn-warning"
                                                 >
-                                                    Lưu
+                                                    Đổi mật khẩu
                                                 </button>
                                             </form>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>

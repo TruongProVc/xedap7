@@ -7,7 +7,7 @@ const AccountManagement = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/accountmanagement");
+        const response = await fetch("http://localhost:3000/privatesite/accountmanagement");
         const data = await response.json();
         setAccounts(data); 
       } catch (error) {

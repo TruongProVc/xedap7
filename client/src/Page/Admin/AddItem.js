@@ -77,7 +77,7 @@ const AddProductForm = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Sản phẩm đã được thêm:', data);
-        window.location.href = '/productlist';
+        window.location.href = '/privatesite/productlist';
       } else {
         console.log('Có lỗi khi thêm sản phẩm');
       }
@@ -261,7 +261,7 @@ const AddProductForm = () => {
                   </div>
                 </div>
                 <div className="d-flex justify-content-end">
-                  <Link to="/Dashboard" className='btn btn-danger'> Quay về </Link>
+                  <Link to="/privatesite/Dashboard" className='btn btn-danger'> Quay về </Link>
                   <button type="submit" className="btn btn-primary">Thêm sản phẩm</button>
                 </div>
               </form>
