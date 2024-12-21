@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const Brand = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = '/login'
+    throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+  }
   const [brandName, setBrandName] = useState('');
   const [brands, setBrands] = useState([]);
   const [editingBrandId, setEditingBrandId] = useState(null); // ID thương hiệu đang chỉnh sửa

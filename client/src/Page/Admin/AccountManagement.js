@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const AccountManagement = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = '/login'
+    throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+  }
   const [accounts, setAccounts] = useState([]);
 
   useEffect(() => {

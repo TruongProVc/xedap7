@@ -5,15 +5,20 @@ import Dashboard from "../Page/Admin/Dashboard";
 import ItemProduct from "../Page/Admin/ProductList";
 import AddProductForm from "../Page/Admin/AddItem";
 import EditProductForm from "../Page/Admin/EditProduct";
-import "../Page/Admin/admincss/Style.css"
 import Orders from "../Page/Admin/Order";
 import Brand from "../Page/Admin/Brand";
 import ProfileAdmin from "../Page/Admin/ProfileAdmin";
 import AccountManagement from "../Page/Admin/AccountManagement";
 import Login from "../Page/Login/Login";
+import "../Page/Admin/admincss/Style.css"
 
+function handleLogout() {
+  localStorage.removeItem("token"); // Xóa token khỏi localStorage
+  window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập
+}
 const Sidebar = () => {
   return (
+    <div>
     <aside className="left-sidebar">
       <div>
         <div className="brand-logo d-flex align-items-center justify-content-between">
@@ -110,6 +115,7 @@ const Sidebar = () => {
         </nav>
       </div>
     </aside>
+    </div>
   );
 };
 
@@ -151,7 +157,7 @@ const Header = () => {
       </Link>
     </li>
     <li>
-      <a href="/account/logout" className="btn btn-outline-primary mx-3 mt-2 d-block">
+      <a href="#" onClick={handleLogout} className="btn btn-outline-primary mx-3 mt-2 d-block">
         Logout
       </a>
     </li>
@@ -169,7 +175,6 @@ const Header = () => {
 
 const AdminLayout = () => {
   return (
-    <BrowserRouter>
     <div
       className="page-wrapper"
       id="main-wrapper"
@@ -183,22 +188,18 @@ const AdminLayout = () => {
       <div className="body-wrapper">
         <Header />
         <Routes>
-              <Route path="/privatesite/Dashboard" element={<Dashboard/>}></Route>
-              <Route path="/privatesite/ProductList" element={<ItemProduct/>}></Route>
-              <Route path="/privatesite/AddProduct" element={<AddProductForm/>}></Route>
-              <Route path="/privatesite/edit" element={<EditProductForm/>}></Route>
-              <Route path="/privatesite/brand" element={<Brand />}></Route>
-              <Route path="/privatesite/Order" element={<Orders/>}></Route>
-              <Route path="/privatesite/profile" element={<ProfileAdmin />}></Route>
-              <Route path="/privatesite/AccountManagement" element={<AccountManagement />}></Route>
-              <Route path="/privatesite/login" element={<Login />}></Route>
-            </Routes>
+          <Route path="Dashboard" element={<Dashboard />} />
+          <Route path="ProductList" element={<ItemProduct />} />
+          <Route path="AddProduct" element={<AddProductForm />} />
+          <Route path="edit" element={<EditProductForm />} />
+          <Route path="brand" element={<Brand />} />
+          <Route path="Order" element={<Orders />} />
+          <Route path="profile" element={<ProfileAdmin />} />
+          <Route path="AccountManagement" element={<AccountManagement />} />
+          <Route path="login" element={<Login />} />
+        </Routes>
       </div>
-      <script src="../../%PUBLIC_URL%/assets/js/privatesite/adminsite/adminsite.js"></script>
-      <script src="../../%PUBLIC_URL%/assets/js/privatesite/adminsite/menu.js"></script>
-      <script src="../../%PUBLIC_URL%/assets/js/privatesite/adminsite/sidebar.js"></script>
     </div>
-    </BrowserRouter>
   );
 };
 

@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
 const Orders = ({ orderStatus, orders }) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = '/login'
+    throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+  }
   const [status, setStatus] = useState('0');
   const [search, setSearch] = useState('');
 

@@ -1,183 +1,161 @@
-import React from "react";
-const Cart =()=>{
-    return(
-<>
-  <div className="breadcrumb-section ">
-    <div className="breadcrumb-wrapper">
-      <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <h3 className="breadcrumb-title">Cart</h3>
-            <div className="breadcrumb-nav breadcrumb-nav-color--black breadcrumb-nav-hover-color--golden">
-              <nav aria-label="breadcrumb">
-                <ul>
-                  <li>
-                    <a href="index.html">Home</a>
-                  </li>
-                  <li>
-                    <a href="shop-grid-sidebar-left.html">Cart</a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>{" "}
-  {/* ...:::: End Breadcrumb Section:::... */}
-  {/* ...:::: Start Cart Section:::... */}
-  <div className="cart-section">
-    {/* Start Cart Table */}
-    <div className="cart-table-wrapper" data-aos="fade-up" data-aos-delay={0}>
-      <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <div className="table_desc">
-              <div className="table_page table">
-                <table>
-                  {/* Start Cart Table Head */}
-                  <thead>
-                    <tr>
-                      {/* Xóa cột Image */}
-                      <th className="product_name">Tên sản phẩm</th>
-                      <th className="product_price">Giá</th>
-                      <th className="product_size">Size</th>{" "}
-                      {/* Added Size column */}
-                      <th className="product_quantity">Số lượng</th>
-                      <th className="product_total">Tổng</th>
-                      <th className="product_remove">Xóa</th>
-                    </tr>
-                  </thead>{" "}
-                  {/* End Cart Table Head */}
-                  <tbody>
-                    {/* Start Cart Single Item*/}
-                    <tr>
-                      <td className="product_name">
-                        <a href="product-details-default.html">
-                          Handbag fringilla
-                        </a>
-                      </td>
-                      <td className="product_price">$65.00</td>
-                      <td className="product_size">M</td>{" "}
-                      {/* Added Size value */}
-                      <td className="product_quantity">
-                        <label>Quantity</label>{" "}
-                        <input
-                          min={1}
-                          max={100}
-                          defaultValue={1}
-                          type="number"
-                        />
-                      </td>
-                      <td className="product_total">$130.00</td>
-                      <td className="product_remove">
-                        <a href="#">
-                          <i className="fa fa-trash-o" />
-                        </a>
-                      </td>
-                    </tr>{" "}
-                    {/* End Cart Single Item*/}
-                    {/* Start Cart Single Item*/}
-                    <tr>
-                      <td className="product_name">
-                        <a href="product-details-default.html">
-                          Handbags justo
-                        </a>
-                      </td>
-                      <td className="product_price">$90.00</td>
-                      <td className="product_size">L</td>{" "}
-                      {/* Added Size value */}
-                      <td className="product_quantity">
-                        <label>Quantity</label>{" "}
-                        <input
-                          min={1}
-                          max={100}
-                          defaultValue={1}
-                          type="number"
-                        />
-                      </td>
-                      <td className="product_total">$180.00</td>
-                      <td className="product_remove">
-                        <a href="#">
-                          <i className="fa fa-trash-o" />
-                        </a>
-                      </td>
-                    </tr>{" "}
-                    {/* End Cart Single Item*/}
-                    {/* Start Cart Single Item*/}
-                    <tr>
-                      <td className="product_name">
-                        <a href="product-details-default.html">Handbag elit</a>
-                      </td>
-                      <td className="product_price">$80.00</td>
-                      <td className="product_size">S</td>{" "}
-                      {/* Added Size value */}
-                      <td className="product_quantity">
-                        <label>Quantity</label>{" "}
-                        <input
-                          min={1}
-                          max={100}
-                          defaultValue={1}
-                          type="number"
-                        />
-                      </td>
-                      <td className="product_total">$160.00</td>
-                      <td className="product_remove">
-                        <a href="#">
-                          <i className="fa fa-trash-o" />
-                        </a>
-                      </td>
-                    </tr>{" "}
-                    {/* End Cart Single Item*/}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>{" "}
-    {/* End Cart Table */}
-    {/* Start Coupon Start */}
-    <div className="coupon_area">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-12 col-md-6">
-            <div
-              className="coupon_code right"
-              data-aos="fade-up"
-              data-aos-delay={400}
-            >
-              <h3>Cart Totals</h3>
-              <div className="coupon_inner">
-                <div className="cart_subtotal">
-                  <p>Giá</p>
-                  <p className="cart_amount">$215.00</p>
-                </div>
-                <div className="cart_subtotal">
-                  <p>Ship</p>
-                  <p className="cart_amount">Free</p>
-                </div>
-                <div className="cart_subtotal">
-                  <p>Tổng</p>
-                  <p className="cart_amount">$215.00</p>
-                </div>
-                <div className="checkout_btn">
-                  <a href="#" className="btn btn-md btn-pink">
-                    Tiếp tục thanh toán
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>{" "}
-    {/* End Coupon Start */}
-  </div>
-</>
+import React, { useState, useEffect } from "react";
+import { FaTrash } from "react-icons/fa";
+const Cart = () => {
+  const [cart, setCart] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-    )
-}
+  // Lấy giỏ hàng từ localStorage
+  useEffect(() => {
+    const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+    setCart(cartData);
+    calculateTotal(cartData);
+  }, []);
+
+  // Tính toán tổng giá trị giỏ hàng
+  const calculateTotal = (cartData) => {
+    let total = 0;
+    cartData.forEach(item => {
+      total += item.Price * item.Quantity;
+    });
+    setTotalPrice(total);
+  };
+
+  // Cập nhật số lượng sản phẩm trong giỏ hàng
+  const updateQuantity = (productId, newQuantity) => {
+    const updatedCart = cart.map(item => {
+      if (item.ProductId === productId) {
+        item.Quantity = newQuantity;
+      }
+      return item;
+    });
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    calculateTotal(updatedCart);
+  };
+
+  // Xóa sản phẩm khỏi giỏ hàng
+  const removeProduct = (productId) => {
+    const updatedCart = cart.filter(item => item.ProductId !== productId);
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    calculateTotal(updatedCart);
+  };
+
+  return (
+    <>
+      <div className="breadcrumb-section breadcrumb-bg-color--golden">
+        <div className="breadcrumb-wrapper">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <h3 className="breadcrumb-title">Cart</h3>
+                <div className="breadcrumb-nav breadcrumb-nav-color--black breadcrumb-nav-hover-color--golden">
+                  <nav aria-label="breadcrumb">
+                    <ul>
+                      <li><a href="index.html">Home</a></li>
+                      <li><a href="shop-grid-sidebar-left.html">Cart</a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Cart Table */}
+      <div className="cart-section">
+        <div className="cart-table-wrapper" data-aos="fade-up" data-aos-delay={0}>
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <div className="table_desc">
+                  <div className="table_page table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th className="product_name">Tên sản phẩm</th>
+                          <th className="product_price">Giá</th>
+                          <th className="product_quantity">Số lượng</th>
+                          <th className="product_total">Tổng</th>
+                          <th className="product_remove">Xóa</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cart.length > 0 ? (
+                          cart.map((item) => (
+                            <tr key={item.ProductId}>
+                              <td className="product_name">
+                                <a>{item.ProductName}</a>
+                              </td>
+                              <td className="product_price">{Number(item.Price).toLocaleString()} VNĐ</td>
+                              <td className="product_quantity">
+                                
+                                <input
+                                  min={1}
+                                  max={100}
+                                  value={item.Quantity}
+                                  type="number"
+                                  onChange={(e) => updateQuantity(item.ProductId, Number(e.target.value))}
+                                />
+                              </td>
+                              <td className="product_total">{(item.Price * item.Quantity).toLocaleString()} VNĐ</td>
+                              <td className="product_remove">
+                                <a href="#" onClick={() => removeProduct(item.ProductId)}>
+                                <FaTrash style={{ color: 'black' }} />
+
+                                </a>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="text-center">Giỏ hàng của bạn trống.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cart Totals */}
+        <div className="coupon_area">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12 col-md-6">
+                <div className="coupon_code right" data-aos="fade-up" data-aos-delay={400}>
+                  <h3>Cart Totals</h3>
+                  <div className="coupon_inner">
+                    <div className="cart_subtotal">
+                      <p>Giá</p>
+                      <p className="cart_amount">{totalPrice.toLocaleString()} VNĐ</p>
+                    </div>
+                    <div className="cart_subtotal">
+                      <p>Ship</p>
+                      <p className="cart_amount">Free</p>
+                    </div>
+                    <div className="cart_subtotal">
+                      <p>Tổng</p>
+                      <p className="cart_amount">{totalPrice.toLocaleString()} VNĐ</p>
+                    </div>
+                    <div className="checkout_btn">
+                      <a href="#" className="btn btn-md btn-pink">
+                        Tiếp tục thanh toán
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export default Cart;

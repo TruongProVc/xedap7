@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
 const ProfileAdmin = ({ onPasswordChange }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = '/login'
+      throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+    }
     const [accountInformation, setAccountInformation] = useState(null);
-    const [usrName, setUsrName] = useState('');
-
-    const [groupName, setGroupName] = useState('');
-    const [phone, setPhone] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -29,10 +30,7 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                     throw new Error('Không thể lấy thông tin người dùng');
                 }
                 const data = await response.json();
-                // console.log(data);
-                // setAccountInformation(data);
-                setUsrName(data.username)
-                // setGroupName(data.groupName); 
+                setAccountInformation(data)
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -40,41 +38,72 @@ const ProfileAdmin = ({ onPasswordChange }) => {
 
         fetchUserData();
     }, []);
-
+    const handleProfileUpdate = async () => {
+        const updatedData = {
+            userId:accountInformation?.userId,
+            lastname: accountInformation?.lastname,
+            firstname: accountInformation?.firstname,
+            gender: accountInformation?.gender,
+            address: accountInformation?.address,
+            mobile: accountInformation?.mobile,
+        };
+        try {
+            const response = await fetch('http://localhost:3000/privatesite/updateprofile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(updatedData),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data)
+                setAccountInformation(data); 
+                localStorage.setItem('token', data.token); // Cập nhật lại phiên
+                alert('Cập nhật thông tin thành công');
+            } else {
+                alert('Có lỗi xảy ra khi cập nhật thông tin');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            alert('Có lỗi xảy ra');
+        }
+    };
     const handlePasswordChange = async () => {
-        if (newPassword !== confirmNewPassword) {
-            alert('Mật khẩu mới không khớp!');
-            return;
-        }
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Bạn chưa đăng nhập!');
-            return;
-        }
-
-        const response = await fetch('http://localhost:3000/change-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-                currentPassword,
-                newPassword,
-            }),
-        });
-
-        if (response.ok) {
-            alert('Mật khẩu đã được thay đổi');
-        } else {
+        const data = {
+            oldPassword: currentPassword, // Mật khẩu cũ
+            newPassword: newPassword, // Mật khẩu mới
+        };
+    
+        try {
+            const response = await fetch('http://localhost:3000/privatesite/profile/changepassword', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Token từ localStorage hoặc session
+                },
+                body: JSON.stringify(data),
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                alert('Mật khẩu đã được thay đổi thành công');
+                // Cập nhật lại token nếu cần
+                localStorage.setItem('token', result.token);
+            } else {
+                const error = await response.json();
+                alert(error.error); // Hiển thị lỗi nếu có
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
             alert('Có lỗi xảy ra khi thay đổi mật khẩu');
         }
     };
-    // if (!accountInformation) {
-    //     return <div>Đang tải thông tin người dùng...</div>;
-    // }
-
+    
+    if (!accountInformation) {
+        return <div>Đang tải thông tin người dùng...</div>;
+    }
     return (
         <div className="content-wrapper">
             <section className="content-header">
@@ -112,7 +141,7 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                                     </h3>
                                     <ul className="list-group list-group-unbordered mb-3">
                                         <li className="list-group-item">
-                                            <b>Nhóm tài khoản:</b>
+                                            <b>Nhóm tài khoản: </b>quản trị
                                             {/* <a className="float-right text-decoration-none c-black">{groupName}</a> */}
                                         </li>
                                     </ul>
@@ -169,29 +198,18 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        value={usrName}
-                                                    />
-                                                    <p>{usrName}</p>
-                                                </div>
-                                            </div>
-                                            {/* <div className="form-group row mb-3">
-                                                <label className="col-sm-2 col-form-label">Email</label>
-                                                <div className="col-sm-10">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        value={accountInformation?.Email}
+                                                        value={accountInformation?.username}
                                                         disabled
                                                     />
                                                 </div>
                                             </div>
                                             <div className="form-group row mb-3">
-                                                <label className="col-sm-2 col-form-label">Thời gian tạo</label>
+                                                <label className="col-sm-2 col-form-label">Email</label>
                                                 <div className="col-sm-10">
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        value={accountInformation?.CreateAt}
+                                                        value={accountInformation?.email}
                                                         disabled
                                                     />
                                                 </div>
@@ -202,16 +220,59 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        value={phone}
-                                                        onChange={(e) => setPhone(e.target.value)}
+                                                        value={accountInformation?.mobile}
+                                                        onChange={(e) => setAccountInformation({ ...accountInformation, mobile: e.target.value })}
                                                     />
                                                 </div>
-                                            </div> */}
-                                            {/* Additional fields */}
-                                            <button type="submit" className="btn btn-success">Lưu</button>
+                                            </div>
+                                            <div className="form-group row mb-3">
+                                                <label className="col-sm-2 col-form-label">Họ</label>
+                                                <div className="col-sm-10">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={accountInformation?.lastname}
+                                                        onChange={(e) => setAccountInformation({ ...accountInformation, lastname: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-group row mb-3">
+                                                <label className="col-sm-2 col-form-label">Tên</label>
+                                                <div className="col-sm-10">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={accountInformation?.firstname}
+                                                        onChange={(e) => setAccountInformation({ ...accountInformation, firstname: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-group row mb-3">
+                                                <label className="col-sm-2 col-form-label">Địa chỉ</label>
+                                                <div className="col-sm-10">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={accountInformation?.address}
+                                                        onChange={(e) => setAccountInformation({ ...accountInformation, address: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-group row mb-3">
+                                                <label className="col-sm-2 col-form-label">Giới tính</label>
+                                                <div className='col-sm-10'>
+                                                    <select className="form-control"  
+                                                            value={accountInformation?.gender || ''} 
+                                                            onChange={(e) => setAccountInformation({ ...accountInformation, gender: e.target.value })}>
+                                                        <option value="Nam">Nam</option>
+                                                        <option value="Nữ">Nữ</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <button type="submit" className="btn btn-success" onClick={handleProfileUpdate}>Lưu</button>
                                         </div>
 
-                                        {/* <div
+                                        <div
                                             className="tab-pane fade"
                                             id="profile"
                                             role="tabpanel"
@@ -240,17 +301,6 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="form-group row mb-3">
-                                                    <label className="col-sm-2 col-form-label">Nhập lại mật khẩu mới</label>
-                                                    <div className="col-sm-10">
-                                                        <input
-                                                            type="password"
-                                                            className="form-control"
-                                                            value={confirmNewPassword}
-                                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                                        />
-                                                    </div>
-                                                </div>
                                                 <button
                                                     type="button"
                                                     onClick={handlePasswordChange}
@@ -259,7 +309,7 @@ const ProfileAdmin = ({ onPasswordChange }) => {
                                                     Đổi mật khẩu
                                                 </button>
                                             </form>
-                                        </div> */}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const EditProductForm = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = '/login'
+    throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+  }
   // Trạng thái của các trường trong form
   const [productName, setProductName] = useState('');
   const [productImage, setProductImage] = useState(null);

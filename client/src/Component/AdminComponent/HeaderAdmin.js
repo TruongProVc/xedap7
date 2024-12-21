@@ -1,5 +1,9 @@
 import React from "react";
 
+function handleLogout() {
+  localStorage.removeItem("token"); // Xóa token khỏi localStorage
+  window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập
+}
 const HeaderAdmin = () => (
   <header className="app-header">
   <nav className="navbar navbar-expand-lg navbar-light">
@@ -65,8 +69,9 @@ const HeaderAdmin = () => (
                 <p className="mb-0 fs-3">My Task</p>
               </a>
               <a
-                href="./authentication-login.html"
+                href="#"
                 className="btn btn-outline-primary mx-3 mt-2 d-block"
+                onClick={handleLogout}
               >
                 Logout
               </a>

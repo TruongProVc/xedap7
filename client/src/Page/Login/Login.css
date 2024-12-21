@@ -1,3 +1,4 @@
+
 /* Reset some basic styles */
 * {
   margin: 0;
@@ -14,11 +15,23 @@
   background: linear-gradient(135deg, #6e8efb, #a777e3);
   overflow: hidden;
 }
-
+input[type="password"]::placeholder {
+  color: white;
+}
+input[type="text"]::placeholder {
+  color: white;
+}
+input[type="email"]::placeholder {
+  color: white;
+}
 #login_page .container {
   position: relative;
 }
-
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
 #login_page .login-container {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 3rem;

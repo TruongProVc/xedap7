@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate   } from "react-router-dom";
 
 const ItemProduct = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = '/login'
+    throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
+  }
+  
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState(""); // Thông báo thành công hoặc lỗi
-
+  const navigate  = useNavigate(); // To handle redirection
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
-        }
         const response = await fetch("http://localhost:3000/privatesite/products", {
           method: "GET",
           headers: {
@@ -26,8 +28,6 @@ const ItemProduct = () => {
         }
         const data = await response.json();
         setProducts(data); 
-
-
       } catch (error) {
         console.error("Error", error);
         setMessage("Đã xảy ra lỗi khi tải danh sách thương hiệu.");
@@ -68,7 +68,7 @@ const ItemProduct = () => {
                 <table className="table text-nowrap mb-0 align-middle">
                   <thead className="text-dark fs-4">
                     <tr>
-                      <th className="text-center">
+                      <th className="text-center ">
                         <h6 className="fw-600 mb-0">Id</h6>
                       </th>
                       <th className="text-center">
@@ -91,24 +91,24 @@ const ItemProduct = () => {
                   <tbody>
                     {Array.isArray(products) && products.map((product) => (
                     <tr key={product.ProductId}>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <h6 className="fw-600 mb-0">{product.ProductId}</h6>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <h6 className="fw-600 mb-1">{product.ProductName}</h6>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <p className="mb-0 fw-normal">{product.Price}</p>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         {product.Brand.BrandName}
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <div className="d-flex align-items-center justify-content-center gap-2">
                           <span className="badge bg-warning rounded-3 fw-600">Pending</span>
                         </div>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                       <div className="d-flex gap-3 justify-content-center">
                         <Link to="/edit" className="btn btn-warning btn-sm">
                           Sửa

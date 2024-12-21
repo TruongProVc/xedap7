@@ -5,7 +5,6 @@ const sequelize = new Sequelize('ECommerceDB', 'root', '', {
     dialect: 'mysql',
     logging: false, // Tắt log nếu không cần thiết
 });
-
 sequelize
     .authenticate()
     .then(() => {

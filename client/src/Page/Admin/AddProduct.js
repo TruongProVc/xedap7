@@ -6,6 +6,7 @@ import AddProductForm from "./AddItem";
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../Admin/admincss/Style.css"
 const AddProducts = () => (
+  
 
     <div
     className="page-wrapper"

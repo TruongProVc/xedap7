@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSearch, FaShoppingCart, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
@@ -8,8 +8,18 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debounceTimer, setDebounceTimer] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
 
   const navigate = useNavigate(); // Initialize useNavigate
+
+  // Đọc giỏ hàng từ localStorage khi component mount
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    setCartItems(cart);
+  }, []);
+
+  // Tính tổng số lượng sản phẩm trong giỏ hàng
+  const totalQuantity = cartItems.reduce((total, item) => total + item.Quantity, 0);
 
   const handleSearchClick = (event) => {
     event.preventDefault();
@@ -87,10 +97,10 @@ const Header = () => {
                       </a>
                     </li>
                     <li>
-                      <a href="#offcanvas-add-cart" className="offcanvas-toggle">
+                      <Link to={'/cart'} className="offcanvas-toggle">
                         <FaShoppingCart color="white" />
-                        <span className="item-count">3</span>
-                      </a>
+                        <span className="item-count">{totalQuantity}</span>
+                      </Link>
                     </li>
                     <li>
                       <div className="user-info">
@@ -135,12 +145,11 @@ const Header = () => {
                     alt={product.name}
                     className="product-image"
                   />
-                  <p
-                   className="name">{product.ProductName}</p>
+                  <p className="name">{product.ProductName}</p>
                   <p className="price">{product.Price.toLocaleString()} VND</p>
                   <button
                     className="view-product-link"
-                    style={{padding:"20px" ,color: "red" }}
+                    style={{padding:"20px", color: "red" }}
                     onClick={() => handleViewDetails(product.ProductId)} // Call function on click
                   >
                     Xem chi tiết
@@ -180,6 +189,9 @@ const Menu = () => {
           </li>
           <li>
             <Link to={"/Login"}>Login</Link>
+          </li>
+          <li>
+            <Link to={"/AboutUs"}>About Us</Link>
           </li>
         </ul>
       </nav>
