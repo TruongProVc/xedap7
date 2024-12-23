@@ -36,26 +36,40 @@ const ItemProduct = () => {
     fetchProducts();
   }, []); 
 
-  const handleDelete = async (ProductId) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này không?")) {
-      return;
-    }
-    try {
-      const response = await fetch(`http://localhost:3000/privatesite/products/${ProductId}`, {
-        method: "DELETE",
-      });
+ const handleDelete = async (ProductId) => {
+  if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+    return;
+  }
 
-      if (response.ok) {
-        setProducts(products.filter((product) => product.ProductId !== ProductId));
-        alert("Xóa thành công!");
-      } else {
-        alert("Đã xảy ra lỗi khi xóa.");
-      }
-    } catch (error) {
-      console.error("Error deleting brand:", error);
-      alert("Đã xảy ra lỗi khi xóa .");
+  const token = localStorage.getItem("token"); // Giả sử token được lưu trong localStorage
+
+  if (!token) {
+    alert("Bạn chưa đăng nhập hoặc token không hợp lệ.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/privatesite/products/${ProductId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm header Authorization
+      },
+    });
+
+    if (response.ok) {
+      setProducts(products.filter((product) => product.ProductId !== ProductId));
+      alert("Xóa thành công!");
+    } else if (response.status === 403) {
+      alert("Bạn không có quyền xóa sản phẩm này.");
+    } else {
+      alert("Đã xảy ra lỗi khi xóa.");
     }
-  };
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    alert("Đã xảy ra lỗi khi xóa.");
+  }
+};
+
   return (
     <div className="container-fluid">
       {message && <div className="alert alert-info">{message}</div>}
@@ -110,7 +124,11 @@ const ItemProduct = () => {
                       </td>
                       <td className="border-bottom-0 text-center">
                       <div className="d-flex gap-3 justify-content-center">
-                        <Link to="/edit" className="btn btn-warning btn-sm">
+                        <Link 
+                          to={`/privatesite/addproduct/${product.ProductId}`}
+                          state={{ product: product }}
+                          className="btn btn-warning btn-sm"
+                        >
                           Sửa
                         </Link>
                         <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.ProductId)}>Xóa</button>

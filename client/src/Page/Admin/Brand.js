@@ -8,16 +8,13 @@ const Brand = () => {
   }
   const [brandName, setBrandName] = useState('');
   const [brands, setBrands] = useState([]);
-  const [editingBrandId, setEditingBrandId] = useState(null); // ID thương hiệu đang chỉnh sửa
-  const [message, setMessage] = useState(""); // Thông báo thành công hoặc lỗi
+  const [editingBrandId, setEditingBrandId] = useState(null); 
+  const [message, setMessage] = useState(""); 
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        // Lấy token từ localStorage hoặc sessionStorage
         const token = localStorage.getItem("token");
-        // console.log("token check: ", token)
-
         if (!token) {
           throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
         }
@@ -29,7 +26,6 @@ const Brand = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // Thêm token JWT
           },
-          credentials: "include", // Nếu server yêu cầu cookie đi kèm
         });
 
         if (!response.ok) {
@@ -58,9 +54,14 @@ const Brand = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/brands/${brandId}`, {
+      console.log('id', brandId)
+      const response = await fetch(`http://localhost:3000/privatesite/brands/${brandId}`, {
         method: "DELETE",
-      });
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm header Authorization
+        },
+      },
+    );
 
       if (response.ok) {
         setBrands(brands.filter((brand) => brand.BrandId !== brandId));
@@ -84,19 +85,19 @@ const Brand = () => {
 
     if (editingBrandId) {
       try {
-        const response = await fetch(`http://localhost:3000/editbrand/${editingBrandId}`, {
+        const response = await fetch(`http://localhost:3000/privatesite/editbrand/${editingBrandId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({ BrandName: brandName }),
         });
-
         if (response.ok) {
           const updatedBrand = await response.json();
           setBrands(
             brands.map((brand) =>
-              brand.BrandId === editingBrandId ? updatedBrand : brand
+              brand.BrandId === editingBrandId ? updatedBrand.brand : brand
             )
           );
           setEditingBrandId(null);
@@ -111,10 +112,11 @@ const Brand = () => {
       }
     } else {
       try {
-        const response = await fetch("http://localhost:3000/brands", {
+        const response = await fetch("http://localhost:3000/privatesite/brands", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({ BrandName: brandName }),
         });

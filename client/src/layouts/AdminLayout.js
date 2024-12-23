@@ -191,6 +191,7 @@ const AdminLayout = () => {
           <Route path="Dashboard" element={<Dashboard />} />
           <Route path="ProductList" element={<ItemProduct />} />
           <Route path="AddProduct" element={<AddProductForm />} />
+          <Route path="addproduct/:id" element={<AddProductForm />} />
           <Route path="edit" element={<EditProductForm />} />
           <Route path="brand" element={<Brand />} />
           <Route path="Order" element={<Orders />} />

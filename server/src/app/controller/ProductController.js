@@ -14,6 +14,35 @@ exports.getAllProducts = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+exports.getProductById = async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy id từ URL
+        const product = await Product.findOne({
+            where: { ProductId: id },
+            include: [
+                {
+                    model: Image, // Kết hợp với bảng Image
+                    as: 'Images', // Alias để dễ dàng truy cập
+                },
+                {
+                    model: Specification, // Kết hợp với bảng Specification
+                    as: 'Specifications', // Alias để dễ dàng truy cập
+                },
+                {
+                    model: Brand, // Kết hợp với bảng Brand
+                    as: 'Brand', // Alias để dễ dàng truy cập
+                }
+            ]
+        });
+        if (!product) {
+            return res.status(404).json({ error: "Sản phẩm không tồn tại" });
+        }
+        res.json(product); // Trả về sản phẩm nếu tìm thấy
+    } catch (error) {
+        res.status(500).json({ error: error.message }); // Xử lý lỗi server
+    }
+};
+
 // Tạo thư mục upload nếu chưa tồn tại
 const uploadDir = path.join(__dirname, '..', 'uploads');
 
@@ -29,7 +58,6 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-
 const upload = multer({ storage: storage });
 exports.addProduct = async (req, res) => {
     upload.fields([
@@ -43,7 +71,6 @@ exports.addProduct = async (req, res) => {
 
         try {
             const { ProductName, Description, SummaryDescription, Discount, IdBrand, Price, specifications } = req.body;
-
             let avatarPath = req.files['Avatar'] ? req.files['Avatar'][0].filename : null;
 
             const newProduct = await Product.create({
@@ -55,12 +82,7 @@ exports.addProduct = async (req, res) => {
                 Price,
                 Avatar: avatarPath
             });
-
-            // console.log('Avatar path:', avatarPath);
-
-            // Lấy danh sách các hình ảnh (Images) từ request
             const images = req.files['Images'] || [];
-            console.log(images)
             if (images.length > 0) {
                 // Lưu các hình ảnh vào bảng Image
                 const imagePromises = images.map((image) =>
@@ -105,6 +127,7 @@ exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const product = await Product.findByPk(id);
+        console.log(product)
         if (!product) {
             return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
         }
@@ -128,6 +151,108 @@ exports.deleteProduct = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+exports.updateProduct = async (req, res) => {
+    upload.fields([
+        { name: 'Avatar', maxCount: 1 },
+        { name: 'Images', maxCount: 10 }
+    ])(req, res, async (err) => {
+        if (err) {
+            console.error('Lỗi upload:', err);
+            return res.status(500).json({ error: 'Lỗi khi upload hình ảnh' });
+        }
+        try {
+            const { id } = req.params; // Lấy id sản phẩm từ URL
+            const {
+                ProductName,
+                Description,
+                SummaryDescription,
+                Discount,
+                IdBrand,
+                Price,
+                specifications
+            } = req.body;
+            const product = await Product.findByPk(id);
+            console.log(product)
+            if (!product) {
+                return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+            }
+
+            // Cập nhật Avatar nếu có file mới
+            let avatarPath = product.Avatar;
+            if (req.files['Avatar']) {
+                if (avatarPath && fs.existsSync(path.join(uploadDir, avatarPath))) {
+                    fs.unlinkSync(path.join(uploadDir, avatarPath));
+                }
+                avatarPath = req.files['Avatar'][0].filename;
+            }
+
+            // Cập nhật thông tin sản phẩm
+            await product.update({
+                ProductName,
+                Description,
+                SummaryDescription,
+                Discount,
+                IdBrand,
+                Price,
+                Avatar: avatarPath
+            });
+
+            // Cập nhật hình ảnh nếu có file mới
+            if (req.files['Images'] && req.files['Images'].length > 0) {
+                // Xóa hình ảnh cũ
+                const oldImages = await Image.findAll({ where: { ProductId: id } });
+                for (const oldImage of oldImages) {
+                    const oldPath = path.join(uploadDir, oldImage.ImageUrl);
+                    if (fs.existsSync(oldPath)) {
+                        fs.unlinkSync(oldPath);
+                    }
+                }
+                await Image.destroy({ where: { ProductId: id } });
+
+                // Thêm hình ảnh mới
+                const imagePromises = req.files['Images'].map((image) =>
+                    Image.create({
+                        ImageUrl: image.filename,
+                        ProductId: id
+                    })
+                );
+                await Promise.all(imagePromises);
+            }
+
+            // Cập nhật thông số kỹ thuật
+            if (specifications) {
+                let parsedSpecifications = [];
+                try {
+                    parsedSpecifications = JSON.parse(specifications);
+                } catch (parseError) {
+                    console.error('Lỗi khi parse thông số kỹ thuật:', parseError);
+                    return res.status(400).json({ error: 'Thông số kỹ thuật không hợp lệ' });
+                }
+
+                // Xóa thông số kỹ thuật cũ
+                await Specification.destroy({ where: { ProductId: id } });
+
+                // Thêm thông số kỹ thuật mới
+                const specPromises = parsedSpecifications.map((spec) =>
+                    Specification.create({
+                        SpecificationName: spec.SpecificationName,
+                        SpecificationContent: spec.SpecificationContent,
+                        ProductId: id
+                    })
+                );
+                await Promise.all(specPromises);
+            }
+
+            res.json({ message: 'Cập nhật sản phẩm thành công' });
+        } catch (error) {
+            console.error('Lỗi khi cập nhật sản phẩm:', error);
+            res.status(500).json({ error: error.message });
+        }
+    });
+};
+
+
+
 //
 exports.getProductDetails = async (req, res) => {
     try {
@@ -164,30 +289,30 @@ exports.searchProducts = async (req, res) => {
     }
   };
   //Hiện thông số kĩ thuật
-  exports.getProductSpecifications = async (req, res) => {
-    try {
-        const { productId } = req.params; // Lấy productId từ URL
+exports.getProductSpecifications = async (req, res) => {
+try {
+    const { productId } = req.params; // Lấy productId từ URL
 
-        // Tìm tất cả các thông số kỹ thuật dựa trên ProductId
-        const specifications = await Specification.findAll({
-            where: { ProductId: productId },
-        });
+    // Tìm tất cả các thông số kỹ thuật dựa trên ProductId
+    const specifications = await Specification.findAll({
+        where: { ProductId: productId },
+    });
 
-        if (specifications.length === 0) {
-            return res.status(404).json({
-                message: 'Không có thông số kỹ thuật nào cho sản phẩm này.',
-            });
-        }
-
-        res.json({
-            message: 'Thông số kỹ thuật của sản phẩm',
-            data: specifications,
-        });
-    } catch (error) {
-        console.error('Lỗi khi lấy thông số kỹ thuật:', error);
-        res.status(500).json({
-            error: 'Lỗi khi lấy thông số kỹ thuật của sản phẩm',
-            details: error.message,
+    if (specifications.length === 0) {
+        return res.status(404).json({
+            message: 'Không có thông số kỹ thuật nào cho sản phẩm này.',
         });
     }
+
+    res.json({
+        message: 'Thông số kỹ thuật của sản phẩm',
+        data: specifications,
+    });
+} catch (error) {
+    console.error('Lỗi khi lấy thông số kỹ thuật:', error);
+    res.status(500).json({
+        error: 'Lỗi khi lấy thông số kỹ thuật của sản phẩm',
+        details: error.message,
+    });
+}
 };

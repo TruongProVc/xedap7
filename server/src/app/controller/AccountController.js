@@ -1,11 +1,7 @@
 const Account = require('../models/Account');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = 'saddasdasadsasdadsas'; 
-
-
-
-
-
+const bcrypt = require('bcrypt')
 
 
 

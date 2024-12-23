@@ -8,7 +8,6 @@ const Login =()=>{
     if (token) {
       window.location.href = '/home'
     }
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState('');
