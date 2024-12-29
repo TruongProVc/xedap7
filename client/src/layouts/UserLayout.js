@@ -8,6 +8,8 @@ import AllProducts from "../Page/User/AllProducts";
 import AboutUs from "../Page/User/AboutUs";
 import Cart from "../Page/User/Cart";
 import Checkout from "../Page/User/CheckOut";
+import UserProfile from "../Page/User/UserProfile";
+import OrderDetails from "../Page/User/OrderDetail";
 
 const UserLayout = () => {
   return (
@@ -17,12 +19,13 @@ const UserLayout = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/productdetails/:id" element={<ProductDetail />} />
+          <Route path="/products/productdetails/:id" element={<ProductDetail />} />
           <Route path="/AllItem" element={<AllProducts />} />
           <Route path="/AboutUs" element={<AboutUs />} />
           <Route path="/cart" element={<Cart />} /> 
           <Route path="/checkout" element={<Checkout />} /> 
-
+          <Route path="/UserProfile" element={<UserProfile/>}></Route>
+          <Route path="/order/:orderId" element={<OrderDetails />} />
         </Routes>
       </div>
       <Footer />

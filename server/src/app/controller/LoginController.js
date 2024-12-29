@@ -20,15 +20,13 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: 'Sai tên đăng nhập hoặc mật khẩu' });
     }
-
-    // So sánh mật khẩu nhập vào với mật khẩu đã mã hóa
     const isPasswordValid = await bcrypt.compare(password, user.Password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Sai tên đăng nhập hoặc mật khẩu' });
     }
 
-    // Tạo JWT token
+    //  JWT token
     const token = jwt.sign(
       {
         username: user.Username,
@@ -43,10 +41,9 @@ exports.login = async (req, res) => {
         customerid: user.CustomerId
       },
       SECRET_KEY,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
-    // Trả về token và thông tin người dùng cơ bản
     return res.json({
       message: 'Đăng nhập thành công',
       token: token,
@@ -119,7 +116,7 @@ exports.register = async (req, res) => {
           customerid: newUser.CustomerId
          },
         SECRET_KEY, 
-        { expiresIn: '1h' }
+        { expiresIn: '7d' }
       ),
     });
   } catch (error) {

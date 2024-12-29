@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
+const OrderStatus = require('./OrderStatus'); // Import model OrderStatus
 
 const Order = sequelize.define('Order', {
     OrderId: {
@@ -36,9 +37,19 @@ const Order = sequelize.define('Order', {
         allowNull: true,
         defaultValue: DataTypes.NOW,
     },
+    OrderStatusId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: OrderStatus, 
+            key: 'OrderStatusId',
+        },
+    },
 }, {
     tableName: 'order',
-    timestamps: false, 
+    timestamps: false,
 });
+
+Order.belongsTo(OrderStatus, { foreignKey: 'OrderStatusId', as: 'OrderStatus' });
 
 module.exports = Order;

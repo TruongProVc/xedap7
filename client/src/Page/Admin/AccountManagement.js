@@ -12,7 +12,12 @@ const AccountManagement = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await fetch("http://localhost:3000/privatesite/accountmanagement");
+        const response = await fetch("http://localhost:3000/privatesite/accountmanagement",{
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm header Authorization
+          },
+        });
         const data = await response.json();
         setAccounts(data); 
       } catch (error) {
@@ -57,27 +62,26 @@ const AccountManagement = () => {
                   <tbody>
                     {Array.isArray(accounts) && accounts.map((acc) => (
                     <tr key={acc.AccountId}>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <h6 className="fw-600 mb-0">{acc.AccountId}</h6>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <h6 className="fw-600 mb-1">{acc.Username}</h6>
                       </td>
-                      <td className="border-bottom-0">
+                      <td className="border-bottom-0 text-center">
                         <p className="mb-0 fw-normal">{acc.Email}</p>
                       </td>
-                      <td className="border-bottom-0">
-                        {/* {acc.Brand.BrandName} */}
+                      <td className="border-bottom-0 text-center">
+                        <p className="mb-0 fw-normal">{acc.IdGroup == 1 ? 'Quản trị' : 'Người dùng'}</p>
                       </td>
-                      {/* <td className="border-bottom-0">
-                        <div className="d-flex align-items-center justify-content-center gap-2">
-                          <span className="badge bg-warning rounded-3 fw-600">Pending</span>
-                        </div>
-                      </td> */}
+                      <td className="border-bottom-0 text-center">
+                        <p className="mb-0 fw-normal">{acc.CustomerId}</p>
+                      </td>
                       <td className="border-bottom-0">
                       <div className="d-flex gap-3 justify-content-center">
-                        <Link to="/edit" className="btn btn-warning btn-sm">
-                          Sửa
+                        <Link  to={`/privatesite/accountmanagement/${acc.AccountId}`}
+                          state={{ account: acc }} className="btn btn-primary btn-sm">
+                          Chi tiết
                         </Link>
                         <button className="btn btn-danger btn-sm" >Xóa</button>
                       </div>

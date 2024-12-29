@@ -39,9 +39,4 @@ const IdGroupToName = async (idgroup) => {
   return groupAcc ? groupAcc.GroupName : null; // Trả về GroupName hoặc null nếu không tìm thấy
 };
 
-const NameGroupToId = (nameGroup) =>{
-  const result = 0;
-
-  return result;
-}
 module.exports = authorize;

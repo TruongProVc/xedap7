@@ -183,7 +183,7 @@ const AllProduct = () => {
                     >
                       <div className="product-default-single-item">
                         <div className="image-box">
-                          <Link to={`/productdetails/${product.ProductId}`}>
+                          <Link to={`/products/productdetails/${product.ProductId}`}>
                             <img
                               src={`http://localhost:3000/uploads/${product.Avatar}`}
                               alt={product.ProductName}
@@ -196,7 +196,7 @@ const AllProduct = () => {
                                   data-bs-toggle="modal"
                                   data-bs-target="#modalAddcart"
                                 >
-                                  Add to Cart
+                                  Chi tiết
                                 </a>
                               </div>
                             </div>

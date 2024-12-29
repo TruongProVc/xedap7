@@ -1,74 +1,42 @@
 const Account = require('../models/Account');
+const Order =require('../models/Order');
+const OrderDetail =require('../models/OrderDetail');
+const Product = require('../models/Product');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = 'saddasdasadsasdadsas'; 
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const Customer = require('../models/Customer');
 
-
-exports.getOrderDetails = async (req, res) => {
-    try {
-        const { orderId } = req.params; // Lấy orderId từ params
-
-        const orderDetail = await Order.findOne();
-        console.log(orderDetail)
-
-        if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tìm thấy' });
-        }
-
-        // Trả về thông tin đơn hàng, khách hàng và các sản phẩm trong đơn hàng
-        res.json(order);
-    } catch (error) {
-        console.error('Lỗi khi lấy thông tin đơn hàng:', error);
-        res.status(500).json({ error: error.message });
-    }
-};
-exports.getAllAccounts = async (req, res) => {
+exports.getAllAccountsUser = async (req, res) => {
     try {
         const accounts = await Account.findAll();
         res.json(accounts);
     } catch (error) {
+        console.error('Error fetching all accounts:', error);
         res.status(500).json({ error: error.message });
-    }
-};
-exports.getAccountById = async (req, res) => {
-    try {
-        const { id } = req.params; // Lấy id từ params
-
-        // Tìm tài khoản theo AccountId
-        const account = await Account.findOne({
-            where: { AccountId: id }, // Truy vấn theo AccountId
-        });
-
-        if (!account) {
-            return res.status(404).json({ message: "Tài khoản không tìm thấy." });
-        }
-
-        res.json(account); // Trả về tài khoản tìm thấy
-    } catch (error) {
-        res.status(500).json({ error: error.message }); // Xử lý lỗi
     }
 };
 
 // admin
-exports.getProfileAdmin = async(req,res) => {
-    try{
+exports.getProfileUser = async (req, res) => {
+    try {
         const user = req.user;
         res.json(user); 
+    } catch (err) {
+        console.error('Error retrieving user profile:', err);
+        res.status(500).json({ error: err.message });
     }
-    catch(err){
-        res.status(500).json({error:err.message});
-    }
-}
-exports.updateProfileAdmin = async (req, res) => {
-    const { lastname, firstname, gender, address, mobile } = req.body;
-    const userId = req.user.userId; 
-    console.log(req.body)
+};
 
+exports.updateProfileUser = async (req, res) => {
+    const { lastname, firstname, gender, address, mobile } = req.body;
+    const userId = req.user.userId;
+    
 
     try {
         const user = await Account.findOne({ where: { AccountId: userId } });
-        console.log(user)
         if (!user) {
+            console.error('User not found:', userId);
             return res.status(404).json({ error: 'Người dùng không tồn tại' });
         }
 
@@ -78,8 +46,15 @@ exports.updateProfileAdmin = async (req, res) => {
         user.Address = address || user.Address;
         user.Mobile = mobile || user.Mobile;
 
+        const customer = await Customer.findOne({ where: { CustomerId: user.CustomerId } });
+        console.log(customer)
+        customer.Mobile = user.Mobile;
+        customer.Address = user.Address;
+
         await user.save();
-        // Tạo lại token sau khi cập nhật thông tin người dùng
+        await customer.save();
+        
+        // Generate new token after updating user information
         const newToken = jwt.sign(
             {
                 username: user.Username,
@@ -91,22 +66,22 @@ exports.updateProfileAdmin = async (req, res) => {
                 lastname: user.Lastname,
                 gender: user.Gender,
             },
-            SECRET_KEY, // Sử dụng secret key từ môi trường hoặc cấu hình
-            { expiresIn: '1h' } // Cấu hình thời gian hết hạn của token
+            SECRET_KEY, // Use secret key from environment or config
+            { expiresIn: '1h' } // Set token expiration time
         );
 
-        // Trả về token mới và thông tin người dùng
         res.json({
             message: 'Thông tin người dùng đã được cập nhật',
             user,
-            token: newToken, // Trả về token mới
+            token: newToken, // Return new token
         });
-
     } catch (error) {
+        console.error('Error updating profile:', error);
         res.status(500).json({ error: error.message });
     }
 };
-exports.changePassword = async (req, res) => {
+
+exports.changePasswordUser = async (req, res) => {
     const { oldPassword, newPassword } = req.body; // Nhận mật khẩu cũ và mật khẩu mới từ request body
     const userId = req.user.userId;  // Lấy userId từ token đã xác thực
 
@@ -160,6 +135,72 @@ exports.changePassword = async (req, res) => {
         });
 
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+exports.getOrderUser = async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+        return res.status(403).json({ message: "Token không được cung cấp" });
+    }
+
+    try {
+        const user = jwt.verify(token, SECRET_KEY);
+        req.user = user; 
+
+       
+        const customer = await Customer.findOne({
+            where: { CustomerId: user.customerid },
+        });
+        if (!customer) {
+            return res.status(404).json({ message: "Không tìm thấy khách hàng." });
+        }
+        const orders = await Order.findAll({
+            where: { CustomerId: user.customerid },
+            order: [["CreateAt", "DESC"]], 
+        });
+      
+        if (orders.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "Khách hàng này chưa có đơn hàng nào." });
+        }
+
+        // Trả về danh sách đơn hàng
+        res.json({ customer, orders });
+    } catch (err) {
+        console.error("Error: ", err.message);
+        // if (err.name === "JsonWebTokenError") {
+        //     return res.status(401).json({ message: "Token không hợp lệ" });
+        // }
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.getOrderDetails = async (req, res) => {
+    try {
+        const { orderId } = req.params; // Lấy orderId từ params
+        console.log(orderId)
+
+        const orderDetail = await OrderDetail.findAll({
+            where: {OrderId: orderId}, 
+            
+            include: [{
+                model: Product,
+                as: "Product"
+            },
+            {
+                model: Order,
+                as:"Order" 
+            }]
+        });
+        if (!orderDetail) {
+            return res.status(404).json({ message: 'Đơn hàng không tìm thấy' });
+        }
+        // Trả về thông tin đơn hàng, khách hàng và các sản phẩm trong đơn hàng
+        res.json(orderDetail);
+    } catch (error) {
+        console.error('Lỗi khi lấy thông tin đơn hàng:', error);
         res.status(500).json({ error: error.message });
     }
 };

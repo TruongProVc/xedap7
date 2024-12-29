@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes,Link } from 'react-router-dom';
-import "bootstrap/dist/css/bootstrap.min.css"
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Dashboard from "../Page/Admin/Dashboard";
 import ItemProduct from "../Page/Admin/ProductList";
 import AddProductForm from "../Page/Admin/AddItem";
@@ -10,7 +10,10 @@ import Brand from "../Page/Admin/Brand";
 import ProfileAdmin from "../Page/Admin/ProfileAdmin";
 import AccountManagement from "../Page/Admin/AccountManagement";
 import Login from "../Page/Login/Login";
+import DetailAccount from "../Page/Admin/AccountManagementDetail";
 import "../Page/Admin/admincss/Style.css"
+import OrderDetails from "../Page/Admin/OrderDetail";
+import RevenuePage from "../Page/Admin/Revenue";
 
 function handleLogout() {
   localStorage.removeItem("token"); // Xóa token khỏi localStorage
@@ -23,7 +26,9 @@ const Sidebar = () => {
       <div>
         <div className="brand-logo d-flex align-items-center justify-content-between">
           <Link to="/" className="text-nowrap logo-img" style={{ textDecoration: "none", color: "black", marginTop: "5px" }}>
-            <img src="" alt="Logo" />
+            <img src="/images/logoo1.png" alt="Logo"  style={{ height:'100px', textAlign:'center', margin:'10px' }}/>
+
+                                    {/* <img src="/images/logoo1.png" alt="Logo" /> */}
           </Link>
           <div className="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <i className="ti ti-x fs-8"></i>
@@ -96,19 +101,11 @@ const Sidebar = () => {
               </Link>
             </li>
             <li className="sidebar-item">
-              <Link className="sidebar-link" to="/privatesite/ProductList">
+              <Link className="sidebar-link" to="/privatesite/Revenue">
                 <span>
                   <i className="ti ti-settings"></i>
                 </span>
-                <span className="hide-menu">Bình luận</span>
-              </Link>
-            </li>
-            <li className="sidebar-item">
-              <Link className="sidebar-link" to="/privatesite/login">
-                <span>
-                  <i className="ti ti-settings"></i>
-                </span>
-                <span className="hide-menu">Bình luận</span>
+                <span className="hide-menu">Doanh thu</span>
               </Link>
             </li>
           </ul>
@@ -195,9 +192,11 @@ const AdminLayout = () => {
           <Route path="edit" element={<EditProductForm />} />
           <Route path="brand" element={<Brand />} />
           <Route path="Order" element={<Orders />} />
+          <Route path="orders/:id" element={<OrderDetails />} />
           <Route path="profile" element={<ProfileAdmin />} />
           <Route path="AccountManagement" element={<AccountManagement />} />
-          <Route path="login" element={<Login />} />
+          <Route path="AccountManagement/:id" element={<DetailAccount />} />
+          <Route path="revenue" element={<RevenuePage />} />
         </Routes>
       </div>
     </div>

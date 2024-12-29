@@ -1,13 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+const { formatDate } = require('../Common');
 
-const Orders = ({ orderStatus, orders }) => {
+const Orders = () => {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = '/login'
+    window.location.href = '/auth/login';
     throw new Error("Token không tồn tại. Hãy đăng nhập lại.");
   }
   const [status, setStatus] = useState('0');
   const [search, setSearch] = useState('');
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);  // State để lưu kết quả tìm kiếm
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/privatesite/orders", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error(`Lỗi: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setOrders(data);
+        setFilteredOrders(data);  // Cập nhật filteredOrders khi nhận được dữ liệu
+      } catch (error) {
+        console.error("Error", error);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const handleStatusChange = (e) => {
     setStatus(e.target.value);
@@ -15,7 +43,10 @@ const Orders = ({ orderStatus, orders }) => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log('Searching for:', search);
+    const filtered = orders.filter(order => 
+      order.OrderId.toString().includes(search)  // Tìm kiếm theo ID đơn hàng
+    );
+    setFilteredOrders(filtered);  // Cập nhật kết quả tìm kiếm
   };
 
   return (
@@ -24,28 +55,6 @@ const Orders = ({ orderStatus, orders }) => {
         <div className="col-lg-12 d-flex align-items-stretch">
           <div className="card w-100">
             <div className="card-body p-4">
-              <div className="row">
-                <div className="col-lg-6 col-md-6">
-                  <h5 className="card-title fw-600 mb-4">Lọc danh sách</h5>
-                </div>
-                <div className="col-lg-6 col-md-6">
-                  <select
-                    className="form-control"
-                    value={status}
-                    onChange={handleStatusChange}
-                    name="listStatus"
-                  >
-                    <option value="0">Tất cả</option>
-
-                    {/* {orderStatus.map((statusItem) => (
-                      <option key={statusItem.OrderStatusId} value={statusItem.OrderStatusId}>
-                        {statusItem.OrderStatusName}
-                      </option>
-                    ))} */}
-                  </select>
-                </div>
-              </div>
-
               <div className="row">
                 <div className="col-lg-6 col-md-6">
                   <h5 className="card-title fw-600 mb-4">Danh sách đơn hàng</h5>
@@ -57,7 +66,7 @@ const Orders = ({ orderStatus, orders }) => {
                         className="form-control"
                         id="searchNameInput"
                         name="name"
-                        placeholder="Nhập vào mã khách hàng hoặc đơn hàng để tìm kiếm ..."
+                        placeholder="Nhập vào mã đơn hàng để tìm kiếm ..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                       />
@@ -74,7 +83,7 @@ const Orders = ({ orderStatus, orders }) => {
                   <thead className="text-dark fs-4">
                     <tr>
                       <th className='text-center'>
-                        <h6 className="fw-600 mb-0">ID</h6>
+                        <h6 className="fw-600 mb-0">Mã đơn hàng</h6>
                       </th>
                       <th className='text-center'>
                         <h6 className="fw-600 mb-0">Khách hàng</h6>
@@ -83,38 +92,47 @@ const Orders = ({ orderStatus, orders }) => {
                         <h6 className="fw-600 mb-0">Thời gian</h6>
                       </th>
                       <th className='text-center'>
-                        <h6 className="fw-600 mb-0">Áp dụng voucher</h6>
-                      </th>
-                      <th className='text-center'>
-                        <h6 className="fw-600 mb-0">Lệnh</h6>
+                        <h6 className="fw-600 mb-0">Giá trị</h6>
                       </th>
                       <th className='text-center'>
                         <h6 className="fw-600 mb-0">Trạng thái</h6>
                       </th>
+                      <th className='text-center'>
+                        <h6 className="fw-600 mb-0">Lệnh</h6>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                  <tr >
-                        <td>sadads</td>
-                        <td>áddas</td>
-                        <td>áddas</td>
-                        <td>áddas</td>
-                        <td>
-                          <button className='btn btn-danger'>xóa</button>
-                        </td>
-
-                        <td>thành công</td>
-                      </tr>
-                    {/* {orders.map((order) => (
-                      <tr key={order.id}>
-                        <td>{order.id}</td>
-                        <td>{order.customer}</td>
-                        <td>{order.time}</td>
-                        <td>{order.coupon ? 'Đã áp dụng' : 'Chưa áp dụng'}</td>
-                        <td>{order.command}</td>
-                        <td>{order.status}</td>
-                      </tr>
-                    ))} */}
+                    {Array.isArray(filteredOrders) && filteredOrders.map((order) => (
+                    <tr key={order.OrderId}>
+                      <td className="border-bottom-0 text-center">
+                        <h6 className="fw-600 mb-0">{order.OrderId}</h6>
+                      </td>
+                      <td className="border-bottom-0 text-center">
+                        <h6 className="fw-600 mb-1">{order.CustomerId}</h6>
+                      </td>
+                      <td className="border-bottom-0 text-center">
+                        <p className="mb-0 fw-normal">{formatDate(order.CreateAt)}</p>
+                      </td>
+                      <td className="border-bottom-0 text-center">
+                        {order.TotalPrice}
+                      </td>
+                      <td className="border-bottom-0 text-center">
+                        <div className="d-flex align-items-center justify-content-center gap-2">
+                          <span className={`badge rounded-3 fw-600 ${order.OrderStatusId === 1 ? "bg-success" : order.OrderStatusId === 3 ? "bg-warning" : order.OrderStatusId === 5 ? "bg-primary" : "bg-danger"}`}>{order.OrderStatusId === 1 ? "Thành công" : order.OrderStatusId === 3 ? "Đang xử lí" : order.OrderStatusId === 4 ? "Đã hủy" : order.OrderStatusId === 5 ? "Đang vận chuyển" : "Thất bại"}</span>
+                        </div>
+                      </td>
+                      <td className="border-bottom-0 text-center">
+                        <div className="d-flex gap-3 justify-content-center">
+                          <Link
+                            to={`/privatesite/orders/${order.OrderId}`}
+                            className="btn btn-primary btn-sm">
+                            Chi tiết
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                   </tbody>
                 </table>
               </div>
@@ -128,5 +146,4 @@ const Orders = ({ orderStatus, orders }) => {
     </div>
   );
 };
-
 export default Orders;

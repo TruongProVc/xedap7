@@ -18,7 +18,7 @@ const Login =()=>{
       try {
         // req
         const response = await axios.post(
-          "http://localhost:3000/privatesite/login",
+          "http://localhost:3000/auth/login",
           { username, password },
           { withCredentials: true }
         );

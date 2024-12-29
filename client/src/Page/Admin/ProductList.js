@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link,useNavigate   } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ItemProduct = () => {
   const token = localStorage.getItem("token");
@@ -10,6 +10,7 @@ const ItemProduct = () => {
   
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState(""); // Thông báo thành công hoặc lỗi
+  const [searchTerm, setSearchTerm] = useState(""); // Từ khóa tìm kiếm
   const navigate  = useNavigate(); // To handle redirection
   
   useEffect(() => {
@@ -30,45 +31,55 @@ const ItemProduct = () => {
         setProducts(data); 
       } catch (error) {
         console.error("Error", error);
-        setMessage("Đã xảy ra lỗi khi tải danh sách thương hiệu.");
+        setMessage("Đã xảy ra lỗi khi tải danh sách sản phẩm.");
       }
     };
     fetchProducts();
   }, []); 
 
- const handleDelete = async (ProductId) => {
-  if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-    return;
-  }
+  const handleSearch = (event) => {
+    event.preventDefault();
+    // Khi nhấn tìm kiếm, lọc sản phẩm theo ProductId
+    setSearchTerm(event.target.value);
+  };
 
-  const token = localStorage.getItem("token"); // Giả sử token được lưu trong localStorage
+  const filteredProducts = products.filter((product) =>
+    product.ProductId.toString().includes(searchTerm)
+  );
 
-  if (!token) {
-    alert("Bạn chưa đăng nhập hoặc token không hợp lệ.");
-    return;
-  }
+  const handleDelete = async (ProductId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+      return;
+    }
 
-  try {
-    const response = await fetch(`http://localhost:3000/privatesite/products/${ProductId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`, // Thêm header Authorization
-      },
-    });
+    const token = localStorage.getItem("token"); 
 
-    if (response.ok) {
-      setProducts(products.filter((product) => product.ProductId !== ProductId));
-      alert("Xóa thành công!");
-    } else if (response.status === 403) {
-      alert("Bạn không có quyền xóa sản phẩm này.");
-    } else {
+    if (!token) {
+      alert("Bạn chưa đăng nhập hoặc token không hợp lệ.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/privatesite/products/${ProductId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+
+      if (response.ok) {
+        setProducts(products.filter((product) => product.ProductId !== ProductId));
+        alert("Xóa thành công!");
+      } else if (response.status === 403) {
+        alert("Bạn không có quyền xóa sản phẩm này.");
+      } else {
+        alert("Đã xảy ra lỗi khi xóa.");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
       alert("Đã xảy ra lỗi khi xóa.");
     }
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    alert("Đã xảy ra lỗi khi xóa.");
-  }
-};
+  };
 
   return (
     <div className="container-fluid">
@@ -77,7 +88,28 @@ const ItemProduct = () => {
         <div className="col-lg-12 d-flex align-items-stretch">
           <div className="card w-100">
             <div className="card-body p-4">
-              <h5 className="card-title fw-600 mb-4">Danh sách sản phẩm</h5>
+               <div className="row">
+                <div className="col-lg-6 col-md-6">
+                  <h5 className="card-title fw-600 mb-4">Danh sách sản phẩm</h5>
+                </div>
+                <div className="col-lg-6 col-md-6">
+                  <form id="findProductForm">
+                    <div className="searchForm">
+                      <input
+                        className="form-control"
+                        id="searchNameInput"
+                        name="name"
+                        placeholder="Nhập vào mã sản phẩm để tìm kiếm ..."
+                        value={searchTerm}
+                        onChange={handleSearch} // Cập nhật từ khóa tìm kiếm
+                      />
+                      <button type="submit" id="btnSubmit_search" className="btn btn-default">
+                        <i className="ti ti-search"></i>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                </div>
               <div className="table-responsive">
                 <table className="table text-nowrap mb-0 align-middle">
                   <thead className="text-dark fs-4">
@@ -89,21 +121,21 @@ const ItemProduct = () => {
                         <h6 className="fw-600 mb-0">Tên sản phẩm</h6>
                       </th>
                       <th className="text-center">
-                        <h6 className="fw-600 mb-0">Số tiền</h6>
+                        <h6 className="fw-600 mb-0">Giá</h6>
+                      </th>
+                      <th className="text-center">
+                        <h6 className="fw-600 mb-0">Giảm giá</h6>
                       </th>
                       <th className="text-center">
                         <h6 className="fw-600 mb-0">Thương hiệu</h6>
                       </th>
                       <th className="text-center">
-                        <h6 className="fw-600 mb-0">Tình trạng</h6>
-                      </th>
-                      <th className="text-center">
-                        <h6 className="fw-600 mb-0">Trạng thái</h6>
+                        <h6 className="fw-600 mb-0">Lệnh</h6>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(products) && products.map((product) => (
+                    {Array.isArray(filteredProducts) && filteredProducts.map((product) => (
                     <tr key={product.ProductId}>
                       <td className="border-bottom-0 text-center">
                         <h6 className="fw-600 mb-0">{product.ProductId}</h6>
@@ -115,12 +147,10 @@ const ItemProduct = () => {
                         <p className="mb-0 fw-normal">{product.Price}</p>
                       </td>
                       <td className="border-bottom-0 text-center">
-                        {product.Brand.BrandName}
+                        <p className="mb-0 fw-normal">{product.Discount}</p>
                       </td>
                       <td className="border-bottom-0 text-center">
-                        <div className="d-flex align-items-center justify-content-center gap-2">
-                          <span className="badge bg-warning rounded-3 fw-600">Pending</span>
-                        </div>
+                        {product.Brand.BrandName}
                       </td>
                       <td className="border-bottom-0 text-center">
                       <div className="d-flex gap-3 justify-content-center">

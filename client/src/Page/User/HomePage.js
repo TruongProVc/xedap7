@@ -50,10 +50,7 @@ const Content = () => {
                   </div>
                   <div className="content">
                     <h6 className="title">FREE SHIPPING</h6>
-                    <p>
-                      Get 10% cash back, free shipping, free returns, and more at
-                      1000+ top retailers!
-                    </p>
+                   
                   </div>
                 </div>
               </div>
@@ -66,10 +63,7 @@ const Content = () => {
                   </div>
                   <div className="content">
                     <h6 className="title">FREE SHIPPING</h6>
-                    <p>
-                      Get 10% cash back, free shipping, free returns, and more at
-                      1000+ top retailers!
-                    </p>
+                   
                   </div>
                 </div>
               </div>
@@ -82,10 +76,7 @@ const Content = () => {
                   </div>
                   <div className="content">
                     <h6 className="title">FREE SHIPPING</h6>
-                    <p>
-                      Get 10% cash back, free shipping, free returns, and more at
-                      1000+ top retailers!
-                    </p>
+                   
                   </div>
                 </div>
               </div>
@@ -98,10 +89,7 @@ const Content = () => {
                   </div>
                   <div className="content">
                     <h6 className="title">FREE SHIPPING</h6>
-                    <p>
-                      Get 10% cash back, free shipping, free returns, and more at
-                      1000+ top retailers!
-                    </p>
+                  
                   </div>
                 </div>
               </div>
@@ -120,7 +108,7 @@ const Content = () => {
               <div className="col-12">
                 <div className="section-content-gap">
                   <div className="secton-content">
-                    <h3 className="section-title">XE ĐẠP ĐUA</h3>
+                    <h3 className="section-title">Sản phẩn bán chạy</h3>
                     <p><Link to='/AllItem'>Tất cả sản phẩm</Link></p>
                   </div>
                 </div>
@@ -142,7 +130,7 @@ const Content = () => {
                       <div className="product-default-single-item product-color--pink">
                         <div className="image-box">
                         <Link
-                            to={`/productdetails/${product.ProductId}`}
+                            to={`/products/productdetails/${product.ProductId}`}
                             className="image-link"
                           >
                             <img
@@ -157,8 +145,8 @@ const Content = () => {
                           )}
                           <div className="action-link">
                             <div className="action-link-left">
-                            <Link to={`/productdetails/${product.ProductId}`}>
-                                Add to Cart
+                            <Link to={`/products/productdetails/${product.ProductId}`}>
+                                Chi tiết
                               </Link>
                             </div>
                             <div className="action-link-right">
@@ -177,7 +165,7 @@ const Content = () => {
                         <div className="content">
                           <div className="content-left">
                             <h6 className="title">
-                            <Link to={`/productdetails/${product.ProductId}`}>
+                            <Link to={`/products/productdetails/${product.ProductId}`}>
                             {product.ProductName.split(' ').slice(0, 4).join(' ')}{product.ProductName.split(' ').length > 6 ? '...' : ''}
                             </Link>
                             </h6>
@@ -213,7 +201,7 @@ const Content = () => {
               <div className="col-12">
                 <div className="section-content-gap">
                   <div className="secton-content">
-                    <h3 className="section-title">XE ĐẠP ĐUA</h3>
+                    <h3 className="section-title">SẢN PHẨM MỚI</h3>
                     <p><Link to='/AllItem'>Tất cả sản phẩm</Link></p>
                   </div>
                 </div>
@@ -235,7 +223,7 @@ const Content = () => {
                       <div className="product-default-single-item product-color--pink">
                         <div className="image-box">
                         <Link
-                            to={`/productdetails/${product.ProductId}`}
+                            to={`/products/productdetails/${product.ProductId}`}
                             className="image-link"
                           >
                             <img
@@ -250,7 +238,7 @@ const Content = () => {
                           )}
                           <div className="action-link">
                             <div className="action-link-left">
-                            <Link to={`/productdetails/${product.ProductId}`}>
+                            <Link to={`/products/productdetails/${product.ProductId}`}>
                                 Add to Cart
                               </Link>
                             </div>
@@ -270,7 +258,7 @@ const Content = () => {
                         <div className="content">
                           <div className="content-left">
                             <h6 className="title">
-                            <Link to={`/productdetails/${product.ProductId}`}>
+                            <Link to={`/products/productdetails/${product.ProductId}`}>
                             {product.ProductName.split(' ').slice(0, 4).join(' ')}{product.ProductName.split(' ').length > 6 ? '...' : ''}
                             </Link>
                             </h6>
