@@ -125,66 +125,68 @@ const Content = () => {
               <div className="col-12">
                 {/* Product Items */}
                 <div className="row">
-                  {products.slice(0,4).map((product) => (
-                    <div key={product.ProductId} className="col-12 col-md-3 mb-4">
-                      <div className="product-default-single-item product-color--pink">
-                        <div className="image-box">
-                        <Link
-                            to={`/products/productdetails/${product.ProductId}`}
-                            className="image-link"
-                          >
-                            <img
-                            src={`http://localhost:3000/uploads/${product.Avatar}`} // Đường dẫn ảnh
-                            alt={product.ProductName}
-                            />
-                          </Link>
-                          {product.tag && (
-                            <div className="tag">
-                              <span>{product.tag}</span>
-                            </div>
-                          )}
-                          <div className="action-link">
-                            <div className="action-link-left">
-                            <Link to={`/products/productdetails/${product.ProductId}`}>
-                                Chi tiết
-                              </Link>
-                            </div>
-                            <div className="action-link-right">
-                              <a href="#" data-bs-toggle="modal" data-bs-target="#modalQuickview">
-                                <i className="icon-magnifier" />
-                              </a>
-                              <a href="wishlist.html">
-                                <i className="icon-heart" />
-                              </a>
-                              <a href="compare.html">
-                                <i className="icon-shuffle" />
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="content">
-                          <div className="content-left">
-                            <h6 className="title">
-                            <Link to={`/products/productdetails/${product.ProductId}`}>
-                            {product.ProductName.split(' ').slice(0, 4).join(' ')}{product.ProductName.split(' ').length > 6 ? '...' : ''}
-                            </Link>
-                            </h6>
-                            <ul className="review-star">
-                              {[...Array(5)].map((_, index) => (
-                                <li className={index < product.stars ? 'fill' : 'empty'} key={index}>
-                                  <i className="ion-android-star" />
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="content-right">
-                            <span className="price">{Number(product.Price).toLocaleString()} VNĐ</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+  {products.slice(0, 4).map((product) => (
+    <div key={product.ProductId} className="col-12 col-md-3 mb-4">
+      <div className="product-default-single-item product-color--pink">
+        <div className="image-box">
+          <Link to={`/products/productdetails/${product.ProductId}`} className="image-link">
+            <img
+              src={`http://localhost:3000/uploads/${product.Avatar}`}
+              alt={product.ProductName}
+            />
+          </Link>
+          {product.tag && (
+            <div className="tag">
+              <span>{product.tag}</span>
+            </div>
+          )}
+          <div className="action-link">
+            <div className="action-link-left">
+              <Link to={`/products/productdetails/${product.ProductId}`}>Chi tiết</Link>
+            </div>
+            <div className="action-link-right">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#modalQuickview">
+                <i className="icon-magnifier" />
+              </a>
+              <a href="wishlist.html">
+                <i className="icon-heart" />
+              </a>
+              <a href="compare.html">
+                <i className="icon-shuffle" />
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="content">
+          <div className="content-left">
+            <h6 className="title">
+              <Link to={`/products/productdetails/${product.ProductId}`}>
+                {product.ProductName.split(' ').slice(0, 4).join(' ')}
+                {product.ProductName.split(' ').length > 6 ? '...' : ''}
+              </Link>
+            </h6>
+            <ul className="review-star">
+              {[...Array(5)].map((_, index) => (
+                <li
+                  className={index < product.stars ? 'fill' : 'empty'}
+                  key={index}
+                >
+                  <i className="ion-android-star" />
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="content-right">
+            <span className="price">
+              {Number(product.Price).toLocaleString()} VNĐ
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
               </div>
             </div>
           </div>

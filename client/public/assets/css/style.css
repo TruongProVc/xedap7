@@ -19477,15 +19477,27 @@ Pages - Contact
     max-height: 350px; /* Điều chỉnh chiều cao của ảnh */
     overflow: hidden; /* Giúp ảnh không bị tràn ra ngoài */
   }
-  
+  .image-box2 {
+    width: 100%;
+    max-height: 350px; /* Điều chỉnh chiều cao của ảnh */
+    overflow: hidden; /* Giúp ảnh không bị tràn ra ngoài */
+  }
   .image-box img {
     width: 100%; /* Chiếm toàn bộ chiều rộng của khối chứa */
     height: 100%; /* Giữ ảnh trong khung của image-box */
     object-fit: cover; /* Giữ tỉ lệ ảnh mà không bị méo */
     transition: transform 0.3s ease; /* Hiệu ứng khi hover */
   }
-  
+  .image-box2 img {
+    width: 100%; /* Chiếm toàn bộ chiều rộng của khối chứa */
+    height: 100%; /* Giữ ảnh trong khung của image-box */
+    object-fit: cover; /* Giữ tỉ lệ ảnh mà không bị méo */
+    transition: transform 0.3s ease; /* Hiệu ứng khi hover */
+  }
   .product-default-single-item:hover .image-box img {
+    transform: scale(1.1); /* Phóng to ảnh một chút khi hover */
+  }
+  .product-default-single-item:hover .image-box2 img {
     transform: scale(1.1); /* Phóng to ảnh một chút khi hover */
   }
   
@@ -19554,5 +19566,52 @@ Pages - Contact
   .small-image-wrapper img:hover {
     transform: scale(1.1); /* Phóng to ảnh khi di chuột vào */
     opacity: 0.7; /* Làm mờ ảnh khi di chuột vào */
+  }
+  .product-large-image {
+    width: 100%; /* Đặt chiều rộng của container */
+    max-width: 800px; /* Điều chỉnh max-width theo thiết kế của bạn */
+    height: auto; /* Đảm bảo container co dãn theo tỉ lệ hình ảnh */
+    overflow: hidden; /* Đảm bảo hình ảnh không vượt ra ngoài container */
+  }
+  
+  .product-large-image img {
+    width: 100%; /* Chiều rộng đầy đủ của container */
+    height: auto; /* Giữ nguyên tỉ lệ hình ảnh */
+    object-fit: cover; /* Kiểm soát cách hình ảnh được cắt */
+  }
+  /* Đặt kích thước cho container hình ảnh */
+.image-box {
+    position: relative; /* Giữ các phần tử con trong cùng một ngữ cảnh */
+    width: 100%; /* Đảm bảo chiều rộng bằng với container cha */
+    max-width: 300px; /* Giới hạn kích thước tối đa (có thể thay đổi theo ý muốn) */
+    height: 300px; /* Chiều cao cố định (đồng bộ với max-width để giữ hình vuông) */
+    overflow: hidden; /* Cắt bỏ các phần hình ảnh vượt khỏi container */
+  }
+  
+  /* Định dạng hình ảnh */
+  .image-box img {
+    width: 100%; /* Đảm bảo hình ảnh rộng bằng container */
+    height: 100%; /* Đảm bảo hình ảnh cao bằng container */
+    object-fit: cover; /* Giữ tỉ lệ hình ảnh và cắt phần thừa */
+    object-position: center; /* Tùy chọn: căn giữa nội dung ảnh */
+    display: block; /* Loại bỏ khoảng trắng không cần thiết (nếu có) */
+  }
+  /* Đặt kích thước cho container của hình ảnh */
+.image-box2 {
+    position: relative; /* Để quản lý các thành phần con như action-link */
+    width: 100%; /* Chiều rộng đầy đủ theo container cha */
+    padding-top: 100%; /* Đảm bảo khung hình vuông */
+    overflow: hidden; /* Cắt bỏ phần thừa của ảnh */
+  }
+  
+  /* Định dạng hình ảnh */
+  .image-box2 img {
+    position: absolute; /* Giúp ảnh nằm chính xác trong khung hình */
+    top: 0;
+    left: 0;
+    width: 100%; /* Đảm bảo chiều rộng đầy đủ của ảnh */
+    height: 80%; /* Đảm bảo chiều cao đầy đủ của ảnh */
+    object-fit: cover; /* Cắt ảnh để lấp đầy khung nhưng giữ tỉ lệ */
+    object-position: center; /* Tùy chọn: căn giữa nội dung ảnh */
   }
   

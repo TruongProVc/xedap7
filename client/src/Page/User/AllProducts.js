@@ -174,57 +174,65 @@ const AllProduct = () => {
 
             {/* Product List */}
             <div className="col-lg-9">
-              <div className="row">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product) => (
-                    <div
-                      className="col-lg-4 col-md-6 col-sm-12 mb-4"
-                      key={product.ProductId}
-                    >
-                      <div className="product-default-single-item">
-                        <div className="image-box">
-                          <Link to={`/products/productdetails/${product.ProductId}`}>
-                            <img
-                              src={`http://localhost:3000/uploads/${product.Avatar}`}
-                              alt={product.ProductName}
-                            />
-                          </Link>
-                          <div className="action-link">
-                              <div className="action-link-left">
-                                <a
-                                  href="#"
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#modalAddcart"
-                                >
-                                  Chi tiết
-                                </a>
-                              </div>
-                            </div>
-                        </div>
-                        <div className="content" style={{ textAlign: "center" }}>
-                          <div className="content-left" style={{ marginBottom: "30px" }}>
-                            <h6 className="title" style={{ margin: "2", fontSize: "16px" }}>
-                              <a href="#">{product.ProductName.split(' ').slice(0, 4).join(' ')}{product.ProductName.split(' ').length > 6 ? '...' : ''}
-                              </a>
-                            </h6>
-                          </div>
-                          <div className="content-right">
-                            <span className="price" style={{ fontSize: "14px", color: "#c42241" }}>
-                              {Number(product.Price).toLocaleString()} VNĐ
-                            </span>
+            <div className="row">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <div
+                    className="col-lg-4 col-md-6 col-sm-12 mb-4"
+                    key={product.ProductId}
+                  >
+                    <div className="product-default-single-item">
+                      <div className="image-box2">
+                        <Link to={`/products/productdetails/${product.ProductId}`}>
+                          <img
+                            src={`http://localhost:3000/uploads/${product.Avatar}`}
+                            alt={product.ProductName}
+                          />
+                        </Link>
+                        <div className="action-link">
+                          <div className="action-link-left">
+                            <a
+                              href="#"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modalAddcart"
+                            >
+                              Chi tiết
+                            </a>
                           </div>
                         </div>
-
+                      </div>
+                      <div className="content" style={{ textAlign: "center" }}>
+                        <div className="content-left" style={{ marginBottom: "30px" }}>
+                          <h6
+                            className="title"
+                            style={{ margin: "2px", fontSize: "16px" }}
+                          >
+                            <a href="#">
+                              {product.ProductName.split(" ").slice(0, 4).join(" ")}
+                              {product.ProductName.split(" ").length > 6 ? "..." : ""}
+                            </a>
+                          </h6>
+                        </div>
+                        <div className="content-right">
+                          <span
+                            className="price"
+                            style={{ fontSize: "14px", color: "#c42241" }}
+                          >
+                            {Number(product.Price).toLocaleString()} VNĐ
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="col-12">
-                    <p>Không có sản phẩm phù hợp.</p>
                   </div>
-                )}
-              </div>
+                ))
+              ) : (
+                <div className="col-12">
+                  <p>Không có sản phẩm phù hợp.</p>
+                </div>
+              )}
             </div>
+          </div>
+
           </div>
         </div>
       </div>
